@@ -25,8 +25,6 @@ import java.util.Set;
 @EnableFeignClients(basePackages = "com.lord.local.gptjavaapi.remoter.*")
 @Slf4j
 public class OpenAiChatFeignConfig {
-    //    @Autowired
-//    private ProxyService proxyService;
     @Value("${proxy.host}")
     private String proxyHost;
     @Value("${proxy.port}")

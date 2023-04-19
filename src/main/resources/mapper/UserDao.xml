@@ -3,8 +3,12 @@
 <mapper namespace="com.lord.local.gptjavaapi.dao.UserDao">
   <resultMap id="BaseResultMap" type="com.lord.local.gptjavaapi.dao.entity.User">
     <id column="uid" jdbcType="BIGINT" property="uid" />
-    <result column="pwd" jdbcType="VARCHAR" property="pwd" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="Account" jdbcType="VARCHAR" property="account" />
+    <result column="password_secret" jdbcType="VARCHAR" property="passwordSecret" />
+    <result column="secret_type" jdbcType="TINYINT" property="secretType" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -65,7 +69,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    `uid`, pwd, `name`
+    `uid`, Account, password_secret, secret_type, create_time, update_time, is_deleted
   </sql>
   <select id="selectByExample" parameterType="com.lord.local.gptjavaapi.dao.entity.UserExample" resultMap="BaseResultMap">
     select
@@ -106,25 +110,53 @@
     </if>
   </delete>
   <insert id="insert" keyColumn="uid" keyProperty="uid" parameterType="com.lord.local.gptjavaapi.dao.entity.User" useGeneratedKeys="true">
-    insert into user (pwd, `name`)
-    values (#{pwd,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR})
+    insert into user (Account, password_secret, secret_type, 
+      create_time, update_time, is_deleted
+      )
+    values (#{account,jdbcType=VARCHAR}, #{passwordSecret,jdbcType=VARCHAR}, #{secretType,jdbcType=TINYINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="uid" keyProperty="uid" parameterType="com.lord.local.gptjavaapi.dao.entity.User" useGeneratedKeys="true">
     insert into user
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="pwd != null">
-        pwd,
+      <if test="account != null">
+        Account,
       </if>
-      <if test="name != null">
-        `name`,
+      <if test="passwordSecret != null">
+        password_secret,
+      </if>
+      <if test="secretType != null">
+        secret_type,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="isDeleted != null">
+        is_deleted,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="pwd != null">
-        #{pwd,jdbcType=VARCHAR},
+      <if test="account != null">
+        #{account,jdbcType=VARCHAR},
       </if>
-      <if test="name != null">
-        #{name,jdbcType=VARCHAR},
+      <if test="passwordSecret != null">
+        #{passwordSecret,jdbcType=VARCHAR},
+      </if>
+      <if test="secretType != null">
+        #{secretType,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        #{isDeleted,jdbcType=TINYINT},
       </if>
     </trim>
   </insert>
@@ -140,11 +172,23 @@
       <if test="record.uid != null">
         `uid` = #{record.uid,jdbcType=BIGINT},
       </if>
-      <if test="record.pwd != null">
-        pwd = #{record.pwd,jdbcType=VARCHAR},
+      <if test="record.account != null">
+        Account = #{record.account,jdbcType=VARCHAR},
       </if>
-      <if test="record.name != null">
-        `name` = #{record.name,jdbcType=VARCHAR},
+      <if test="record.passwordSecret != null">
+        password_secret = #{record.passwordSecret,jdbcType=VARCHAR},
+      </if>
+      <if test="record.secretType != null">
+        secret_type = #{record.secretType,jdbcType=TINYINT},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isDeleted != null">
+        is_deleted = #{record.isDeleted,jdbcType=TINYINT},
       </if>
     </set>
     <if test="_parameter != null">
@@ -154,8 +198,12 @@
   <update id="updateByExample" parameterType="map">
     update user
     set `uid` = #{record.uid,jdbcType=BIGINT},
-      pwd = #{record.pwd,jdbcType=VARCHAR},
-      `name` = #{record.name,jdbcType=VARCHAR}
+      Account = #{record.account,jdbcType=VARCHAR},
+      password_secret = #{record.passwordSecret,jdbcType=VARCHAR},
+      secret_type = #{record.secretType,jdbcType=TINYINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      is_deleted = #{record.isDeleted,jdbcType=TINYINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -163,19 +211,35 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.lord.local.gptjavaapi.dao.entity.User">
     update user
     <set>
-      <if test="pwd != null">
-        pwd = #{pwd,jdbcType=VARCHAR},
+      <if test="account != null">
+        Account = #{account,jdbcType=VARCHAR},
       </if>
-      <if test="name != null">
-        `name` = #{name,jdbcType=VARCHAR},
+      <if test="passwordSecret != null">
+        password_secret = #{passwordSecret,jdbcType=VARCHAR},
+      </if>
+      <if test="secretType != null">
+        secret_type = #{secretType,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        is_deleted = #{isDeleted,jdbcType=TINYINT},
       </if>
     </set>
     where `uid` = #{uid,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.lord.local.gptjavaapi.dao.entity.User">
     update user
-    set pwd = #{pwd,jdbcType=VARCHAR},
-      `name` = #{name,jdbcType=VARCHAR}
+    set Account = #{account,jdbcType=VARCHAR},
+      password_secret = #{passwordSecret,jdbcType=VARCHAR},
+      secret_type = #{secretType,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      is_deleted = #{isDeleted,jdbcType=TINYINT}
     where `uid` = #{uid,jdbcType=BIGINT}
   </update>
 </mapper>

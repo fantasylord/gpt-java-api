@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lord.local.gptjavaapi.dao.UserDao">
-  <resultMap id="BaseResultMap" type="com.lord.local.gptjavaapi.dao.entity.User">
-    <id column="uid" jdbcType="BIGINT" property="uid" />
-    <result column="Account" jdbcType="VARCHAR" property="account" />
-    <result column="password_secret" jdbcType="VARCHAR" property="passwordSecret" />
-    <result column="secret_type" jdbcType="TINYINT" property="secretType" />
+<mapper namespace="com.lord.local.gptjavaapi.dao.ChatSessionDao">
+  <resultMap id="BaseResultMap" type="com.lord.local.gptjavaapi.dao.entity.ChatSession">
+    <id column="chat_id" jdbcType="BIGINT" property="chatId" />
+    <result column="chat_title" jdbcType="VARCHAR" property="chatTitle" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
-    <result column="version" jdbcType="BIGINT" property="version" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -70,16 +68,15 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    `uid`, Account, password_secret, secret_type, create_time, update_time, is_deleted, 
-    version
+    chat_id, chat_title, user_id, create_time, update_time, is_deleted
   </sql>
-  <select id="selectByExample" parameterType="com.lord.local.gptjavaapi.dao.entity.UserExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.lord.local.gptjavaapi.dao.entity.ChatSessionExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from user
+    from chat_session
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -98,38 +95,33 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from user
-    where `uid` = #{uid,jdbcType=BIGINT}
+    from chat_session
+    where chat_id = #{chatId,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from user
-    where `uid` = #{uid,jdbcType=BIGINT}
+    delete from chat_session
+    where chat_id = #{chatId,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByExample" parameterType="com.lord.local.gptjavaapi.dao.entity.UserExample">
-    delete from user
+  <delete id="deleteByExample" parameterType="com.lord.local.gptjavaapi.dao.entity.ChatSessionExample">
+    delete from chat_session
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" keyColumn="uid" keyProperty="uid" parameterType="com.lord.local.gptjavaapi.dao.entity.User" useGeneratedKeys="true">
-    insert into user (Account, password_secret, secret_type, 
-      create_time, update_time, is_deleted, 
-      version)
-    values (#{account,jdbcType=VARCHAR}, #{passwordSecret,jdbcType=VARCHAR}, #{secretType,jdbcType=TINYINT}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT}, 
-      #{version,jdbcType=BIGINT})
+  <insert id="insert" keyColumn="chat_id" keyProperty="chatId" parameterType="com.lord.local.gptjavaapi.dao.entity.ChatSession" useGeneratedKeys="true">
+    insert into chat_session (chat_title, user_id, create_time, 
+      update_time, is_deleted)
+    values (#{chatTitle,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT})
   </insert>
-  <insert id="insertSelective" keyColumn="uid" keyProperty="uid" parameterType="com.lord.local.gptjavaapi.dao.entity.User" useGeneratedKeys="true">
-    insert into user
+  <insert id="insertSelective" keyColumn="chat_id" keyProperty="chatId" parameterType="com.lord.local.gptjavaapi.dao.entity.ChatSession" useGeneratedKeys="true">
+    insert into chat_session
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="account != null">
-        Account,
+      <if test="chatTitle != null">
+        chat_title,
       </if>
-      <if test="passwordSecret != null">
-        password_secret,
-      </if>
-      <if test="secretType != null">
-        secret_type,
+      <if test="userId != null">
+        user_id,
       </if>
       <if test="createTime != null">
         create_time,
@@ -140,19 +132,13 @@
       <if test="isDeleted != null">
         is_deleted,
       </if>
-      <if test="version != null">
-        version,
-      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="account != null">
-        #{account,jdbcType=VARCHAR},
+      <if test="chatTitle != null">
+        #{chatTitle,jdbcType=VARCHAR},
       </if>
-      <if test="passwordSecret != null">
-        #{passwordSecret,jdbcType=VARCHAR},
-      </if>
-      <if test="secretType != null">
-        #{secretType,jdbcType=TINYINT},
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
@@ -163,31 +149,25 @@
       <if test="isDeleted != null">
         #{isDeleted,jdbcType=TINYINT},
       </if>
-      <if test="version != null">
-        #{version,jdbcType=BIGINT},
-      </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.lord.local.gptjavaapi.dao.entity.UserExample" resultType="java.lang.Long">
-    select count(*) from user
+  <select id="countByExample" parameterType="com.lord.local.gptjavaapi.dao.entity.ChatSessionExample" resultType="java.lang.Long">
+    select count(*) from chat_session
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update user
+    update chat_session
     <set>
-      <if test="record.uid != null">
-        `uid` = #{record.uid,jdbcType=BIGINT},
+      <if test="record.chatId != null">
+        chat_id = #{record.chatId,jdbcType=BIGINT},
       </if>
-      <if test="record.account != null">
-        Account = #{record.account,jdbcType=VARCHAR},
+      <if test="record.chatTitle != null">
+        chat_title = #{record.chatTitle,jdbcType=VARCHAR},
       </if>
-      <if test="record.passwordSecret != null">
-        password_secret = #{record.passwordSecret,jdbcType=VARCHAR},
-      </if>
-      <if test="record.secretType != null">
-        secret_type = #{record.secretType,jdbcType=TINYINT},
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=BIGINT},
       </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
@@ -198,39 +178,31 @@
       <if test="record.isDeleted != null">
         is_deleted = #{record.isDeleted,jdbcType=TINYINT},
       </if>
-      <if test="record.version != null">
-        version = #{record.version,jdbcType=BIGINT},
-      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update user
-    set `uid` = #{record.uid,jdbcType=BIGINT},
-      Account = #{record.account,jdbcType=VARCHAR},
-      password_secret = #{record.passwordSecret,jdbcType=VARCHAR},
-      secret_type = #{record.secretType,jdbcType=TINYINT},
+    update chat_session
+    set chat_id = #{record.chatId,jdbcType=BIGINT},
+      chat_title = #{record.chatTitle,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
-      is_deleted = #{record.isDeleted,jdbcType=TINYINT},
-      version = #{record.version,jdbcType=BIGINT}
+      is_deleted = #{record.isDeleted,jdbcType=TINYINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.lord.local.gptjavaapi.dao.entity.User">
-    update user
+  <update id="updateByPrimaryKeySelective" parameterType="com.lord.local.gptjavaapi.dao.entity.ChatSession">
+    update chat_session
     <set>
-      <if test="account != null">
-        Account = #{account,jdbcType=VARCHAR},
+      <if test="chatTitle != null">
+        chat_title = #{chatTitle,jdbcType=VARCHAR},
       </if>
-      <if test="passwordSecret != null">
-        password_secret = #{passwordSecret,jdbcType=VARCHAR},
-      </if>
-      <if test="secretType != null">
-        secret_type = #{secretType,jdbcType=TINYINT},
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
       </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -241,21 +213,16 @@
       <if test="isDeleted != null">
         is_deleted = #{isDeleted,jdbcType=TINYINT},
       </if>
-      <if test="version != null">
-        version = #{version,jdbcType=BIGINT},
-      </if>
     </set>
-    where `uid` = #{uid,jdbcType=BIGINT}
+    where chat_id = #{chatId,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.lord.local.gptjavaapi.dao.entity.User">
-    update user
-    set Account = #{account,jdbcType=VARCHAR},
-      password_secret = #{passwordSecret,jdbcType=VARCHAR},
-      secret_type = #{secretType,jdbcType=TINYINT},
+  <update id="updateByPrimaryKey" parameterType="com.lord.local.gptjavaapi.dao.entity.ChatSession">
+    update chat_session
+    set chat_title = #{chatTitle,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
-      is_deleted = #{isDeleted,jdbcType=TINYINT},
-      version = #{version,jdbcType=BIGINT}
-    where `uid` = #{uid,jdbcType=BIGINT}
+      is_deleted = #{isDeleted,jdbcType=TINYINT}
+    where chat_id = #{chatId,jdbcType=BIGINT}
   </update>
 </mapper>

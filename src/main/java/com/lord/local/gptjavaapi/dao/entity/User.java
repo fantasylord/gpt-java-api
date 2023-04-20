@@ -31,6 +31,8 @@ public class User implements Serializable {
      */
     private Byte isDeleted;
 
+    private Long version;
+
     private static final long serialVersionUID = 1L;
 
     public Long getUid() {
@@ -89,6 +91,14 @@ public class User implements Serializable {
         this.isDeleted = isDeleted;
     }
 
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -107,7 +117,8 @@ public class User implements Serializable {
             && (this.getSecretType() == null ? other.getSecretType() == null : this.getSecretType().equals(other.getSecretType()))
             && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()))
             && (this.getUpdateTime() == null ? other.getUpdateTime() == null : this.getUpdateTime().equals(other.getUpdateTime()))
-            && (this.getIsDeleted() == null ? other.getIsDeleted() == null : this.getIsDeleted().equals(other.getIsDeleted()));
+            && (this.getIsDeleted() == null ? other.getIsDeleted() == null : this.getIsDeleted().equals(other.getIsDeleted()))
+            && (this.getVersion() == null ? other.getVersion() == null : this.getVersion().equals(other.getVersion()));
     }
 
     @Override
@@ -121,6 +132,7 @@ public class User implements Serializable {
         result = prime * result + ((getCreateTime() == null) ? 0 : getCreateTime().hashCode());
         result = prime * result + ((getUpdateTime() == null) ? 0 : getUpdateTime().hashCode());
         result = prime * result + ((getIsDeleted() == null) ? 0 : getIsDeleted().hashCode());
+        result = prime * result + ((getVersion() == null) ? 0 : getVersion().hashCode());
         return result;
     }
 
@@ -137,6 +149,7 @@ public class User implements Serializable {
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
         sb.append(", isDeleted=").append(isDeleted);
+        sb.append(", version=").append(version);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

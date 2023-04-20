@@ -1,6 +1,8 @@
 package com.lord.local.gptjavaapi.uitls;
 
 import java.security.SecureRandom;
+import java.security.spec.KeySpec;
+import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
@@ -21,16 +23,21 @@ public class ScryptUtil {
 
         return MEMORY_COST + ":" + ITERATIONS + ":" + SALT_LENGTH + ":" + toHex(salt) + ":" + toHex(hash);
     }
-
+    //533
+    //debug 23675
     public static void main(String[] args) {
         String helloWord = null;
         try {
+            long l = System.currentTimeMillis();
             helloWord = hashPassword("helloWord");
+            System.out.println(verifyPassword("helloWord",helloWord));
+            System.out.println(System.currentTimeMillis()-l);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         System.out.println(helloWord);
     }
+
     public static boolean verifyPassword(String password, String hash) throws Exception {
         String[] parts = hash.split(":");
         int memoryCost = Integer.parseInt(parts[0]);

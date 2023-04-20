@@ -1,4 +1,4 @@
-package com.lord.local.gptjavaapi.model;
+package com.lord.local.gptjavaapi.model.resultful;
 
 import lombok.Data;
 
@@ -10,12 +10,15 @@ public class AuthResponse {
     private String scope;
     private String username;
 
-    public AuthResponse(String tokenType, String accessToken, long expiresIn, String scope, String username) {
+    private Long userId;
+
+    public AuthResponse(String tokenType, String accessToken, long expiresIn, String scope, String username,Long userId) {
         this.tokenType = tokenType;
         this.accessToken = accessToken;
         this.expiresIn = expiresIn;
         this.scope = scope;
         this.username = username;
+        this.userId=userId;
     }
 
     // getters and setters

@@ -1,20 +1,19 @@
 package com.lord.local.gptjavaapi.controller;
 
 import com.lord.local.gptjavaapi.dao.entity.User;
-import com.lord.local.gptjavaapi.model.AuthResponse;
-import com.lord.local.gptjavaapi.model.ChatBaseResponse;
+import com.lord.local.gptjavaapi.model.resultful.AuthResponse;
+import com.lord.local.gptjavaapi.model.resultful.ChatBaseResponse;
 import com.lord.local.gptjavaapi.service.JwtTokenProvider;
 import com.lord.local.gptjavaapi.service.UserServer;
 import com.lord.local.gptjavaapi.uitls.VliadatorUtil;
-import feign.Param;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
 
 @RestController
 @RequestMapping("/user")
@@ -33,15 +32,15 @@ public class UserController {
     @GetMapping("/list")
     public ChatBaseResponse<List<User>> getUsers() {
         List<User> users = _userServer.selectUsers();
-        ChatBaseResponse<List<User>> remodel = new ChatBaseResponse();
-        remodel.setData(users);
+        ChatBaseResponse<List<User>> remodel = ChatBaseResponse.successResponse(users);
         return remodel;
     }
 
 
-    @PostMapping(value = "/create", name = "创建用户暂不开放")
+    @ApiOperation(value = "创建用户", notes = "升级中")
+    @PostMapping(value = "/create")
     public ChatBaseResponse<String> createUser(@RequestParam("account") String account, @RequestParam("password") String password) {
-        return ChatBaseResponse.ErrorResponse("服务升级中", -1004);
+        return ChatBaseResponse.errorResponse("服务升级中", -1004);
 //        if (!VliadatorUtil.validateAccount(account)) {
 //            return ChatBaseResponse.ErrorResponse("用户名字母开头，允许5-16字节，允许字母数字下划线", -1001);
 //        }
@@ -63,18 +62,21 @@ public class UserController {
     @PostMapping("/getToken")
     public ChatBaseResponse<?> login(@RequestParam("account") String account, @RequestParam("password") String password) {
         if (!VliadatorUtil.validateAccount(account)) {
-            return ChatBaseResponse.ErrorResponse("用户名字母开头，允许5-16字节，允许字母数字下划线", -1001);
+            return ChatBaseResponse.errorResponse("用户名字母开头，允许5-16字节，允许字母数字下划线", -1001);
         }
         if (!VliadatorUtil.validatePassword(password)) {
-            return ChatBaseResponse.ErrorResponse("密码必须包含大小写字母和数字的组合，不能使用特殊字符，长度在8-10之间", -1002);
+            return ChatBaseResponse.errorResponse("密码必须包含大小写字母和数字的组合，不能使用特殊字符，长度在8-10之间", -1002);
         }
-        // Validate username and password
-        // ...
-        // Generate JWT token
-        String token = jwtTokenProvider.generateToken(account);
+        User login = _userServer.login(account, password);
+        if(login==null){
+            return ChatBaseResponse.errorResponse("用户名或密码错误",-1005);
+        }
+        String token = jwtTokenProvider.generateToken(login);
+        if(StringUtils.isEmpty(token)){
+            return ChatBaseResponse.errorResponse("用户信息有更新请重新登录", -1010);
+        }
         // Return response with custom authorization token
-        ChatBaseResponse<AuthResponse> chatBaseResponse = new ChatBaseResponse();
-        chatBaseResponse.setData(new AuthResponse("Bearer", token, JwtTokenProvider.EXPIRATION_TIME, "read write", account));
+        ChatBaseResponse<AuthResponse> chatBaseResponse =ChatBaseResponse.successResponse(new AuthResponse("Bearer", token, JwtTokenProvider.EXPIRATION_TIME, "read write", account,login.getUid()));
         httpServletResponse.setHeader("Authorization", "Bearer " + token);
         return chatBaseResponse;
     }

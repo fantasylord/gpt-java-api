@@ -1,8 +1,8 @@
 package com.lord.local.gptjavaapi.remoter.client;
 
 import com.lord.local.gptjavaapi.config.OpenAiChatFeignConfig;
-import com.lord.local.gptjavaapi.model.ChatRequestModel;
-import com.lord.local.gptjavaapi.model.ChatResponseModel;
+import com.lord.local.gptjavaapi.model.resultful.ChatRequestModel;
+import com.lord.local.gptjavaapi.model.resultful.ChatResponseModel;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

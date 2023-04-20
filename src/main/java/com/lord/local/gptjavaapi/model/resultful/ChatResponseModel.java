@@ -1,4 +1,4 @@
-package com.lord.local.gptjavaapi.model;
+package com.lord.local.gptjavaapi.model.resultful;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

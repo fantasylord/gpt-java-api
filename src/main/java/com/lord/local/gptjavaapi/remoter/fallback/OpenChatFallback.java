@@ -1,8 +1,8 @@
 package com.lord.local.gptjavaapi.remoter.fallback;
 
 
-import com.lord.local.gptjavaapi.model.ChatRequestModel;
-import com.lord.local.gptjavaapi.model.ChatResponseModel;
+import com.lord.local.gptjavaapi.model.resultful.ChatRequestModel;
+import com.lord.local.gptjavaapi.model.resultful.ChatResponseModel;
 import com.lord.local.gptjavaapi.remoter.client.OpenChatClient;
 import lombok.extern.slf4j.Slf4j;
 

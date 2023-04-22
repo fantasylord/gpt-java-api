@@ -18,4 +18,5 @@
     <mappers>
         <package name="com.lord.local.gptjavaapi.dao"/>
     </mappers>
+
 </configuration>

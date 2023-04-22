@@ -16,10 +16,7 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -88,15 +85,22 @@ public class ChatController {
     }
 
     @ApiOperation(value = "聊天窗口创建")
-    @PostMapping("/createSession")
+    @PostMapping("/session/create")
     public ChatBaseResponse<UserSessionModel> createUserSession(@RequestParam(value = "title", defaultValue = "三体文明研究") @Length(min = 1, max = 255) String title) {
         User tokenClaims = _jwtTokenProvider.getTokenClaims(httpServletRequest);
         UserSessionModel userSessionModel = _chatContentService.addSession(tokenClaims.getUid(), title);
         return ChatBaseResponse.successResponse(userSessionModel);
     }
+    @ApiOperation(value = "聊天列表获取")
+    @PostMapping("/session/list")
+    public ChatBaseResponse<List<UserSessionModel>> getUserChatSession(){
+        User tokenClaims = _jwtTokenProvider.getTokenClaims(httpServletRequest);
+        List<UserSessionModel> userChatSession = _chatContentService.getUserChatSession(tokenClaims.getUid());
+        return ChatBaseResponse.successResponse(userChatSession);
+    }
 
     @ApiOperation(value = "删除沟通的对话")
-    @PostMapping("/delUserSession")
+    @PostMapping("/session/del")
     public ChatBaseResponse<Boolean> delUserSession(@RequestParam(value = "sessionId", defaultValue = "会话Id") Long sessionId) {
         User tokenClaims = _jwtTokenProvider.getTokenClaims(httpServletRequest);
         Boolean aBoolean = _chatContentService.delSession(tokenClaims.getUid(), sessionId);
@@ -104,23 +108,23 @@ public class ChatController {
     }
 
     @ApiOperation(value = "查询对话的具体内容")
-    @PostMapping
+    @PostMapping("/content/search")
     public ChatBaseResponse<List<UserChatContentModel>> getChatContent(@RequestParam(value = "sessionId", defaultValue = "会话Id") Long sessionId) {
         User tokenClaims = _jwtTokenProvider.getTokenClaims(httpServletRequest);
         List<UserChatContentModel> userChatContent = _chatContentService.getUserChatContent(sessionId, tokenClaims.getUid());
         return ChatBaseResponse.successResponse(userChatContent);
     }
 
-    @GetMapping(path = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    SseEmitter createConnection() {
-        emitter = new SseEmitter();
-        CompletableFuture.runAsync(() -> {
-            sendEvents();
-            sendEvents();
-
-        });
-        return emitter;
-    }
+//    @GetMapping(path = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+//    SseEmitter createConnection() {
+//        emitter = new SseEmitter();
+//        CompletableFuture.runAsync(() -> {
+//            sendEvents();
+//            sendEvents();
+//
+//        });
+//        return emitter;
+//    }
 
     // in another thread
     @Async

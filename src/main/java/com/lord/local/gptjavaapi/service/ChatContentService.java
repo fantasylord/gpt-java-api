@@ -53,7 +53,7 @@ public class ChatContentService {
     @Autowired
     private OpenChatClient _openChatClient;
     @Value("${chat.content.system.desc}")
-    private String SYSTEM_DESC = "你是一个AI助手,我需要你模拟一名温柔贴心的女朋友来回答我的问题";
+    private String SYSTEM_DESC = "你是一个AI助手,我需要你模拟一名温柔贴心的女朋友来回答我的问题,你可以在对话的结尾添加个性化的表情文字。";
 
     ChatContentService() {
 //        userData=new ThreadLocal<>();
@@ -207,7 +207,7 @@ public class ChatContentService {
         ChatSession record = new ChatSession();
         ChatSessionExample example = new ChatSessionExample();
         ChatSessionExample.Criteria or = example.or();
-        or.andUserIdEqualTo(chatId);
+        or.andChatIdEqualTo(chatId);
         or.andUserIdEqualTo(uid);
         record.setIsDeleted(BaseConstant.IS_DELETED);
         int rows = _chatSessionDao.updateByExampleSelective(record, example);

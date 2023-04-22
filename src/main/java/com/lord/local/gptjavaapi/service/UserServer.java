@@ -70,7 +70,19 @@ public class UserServer {
         User user = users.stream().findFirst().orElse(null);
         return user;
     }
+    public User authorization(Long uid,Long version) {
+        UserExample example = new UserExample();
+        example.setLimit(1);
+        example.setOrderByClause("create_time desc");
+        UserExample.Criteria or = example.or();
+        or.andUidEqualTo(uid);
+        or.andVersionEqualTo(version);
+        or.andIsDeletedEqualTo(BaseConstant.IS_UN_DELETED);
 
+        List<User> users = _userDao.selectByExample(example);
+        User user = users.stream().findFirst().orElse(null);
+        return user;
+    }
     public User login(String account, String password) {
         UserExample example = new UserExample();
         example.setLimit(1);

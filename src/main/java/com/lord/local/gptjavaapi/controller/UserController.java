@@ -35,6 +35,13 @@ public class UserController {
         ChatBaseResponse<List<User>> remodel = ChatBaseResponse.successResponse(users);
         return remodel;
     }
+    @ApiOperation(value = "查询用户信息", notes = "")
+    @GetMapping("/search")
+    public ChatBaseResponse<List<User>> getUserById(@RequestParam("uid") Long uid) {
+        User user = _userServer.selectUserCache(uid);
+        ChatBaseResponse<List<User>> remodel = ChatBaseResponse.successResponse(user);
+        return remodel;
+    }
 
 
     @ApiOperation(value = "创建用户", notes = "升级中")

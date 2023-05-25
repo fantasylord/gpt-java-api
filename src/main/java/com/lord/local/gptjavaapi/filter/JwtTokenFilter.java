@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -25,16 +26,24 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+    private AntPathMatcher pathMatcher = new AntPathMatcher();
 
 
+    // 判断请求路径是否匹配指定的模式
+    private boolean isMatch(String requestPath, String pattern) {
+        // 将Ant风格的路径模式转换为正则表达式
+        return pathMatcher.match(pattern, requestPath);
+    }
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String header = request.getHeader("Authorization");
         //过滤swagger
         String path = request.getRequestURI();
-        if (path.toLowerCase().startsWith("/swagger")
-                || path.equalsIgnoreCase("/v2/api-docs")
-                || path.equalsIgnoreCase("/v3/api-docs")) {
+        if (isMatch(path,"/swagger-ui.html/**")
+                || isMatch(path,"/webjars/**")
+                || isMatch(path,"/v2/**")
+                || isMatch(path,"/swagger-resources/**")
+               ) {
             filterChain.doFilter(request, response);
             return;
         }

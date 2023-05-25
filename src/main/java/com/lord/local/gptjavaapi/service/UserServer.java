@@ -1,5 +1,7 @@
 package com.lord.local.gptjavaapi.service;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.lord.local.gptjavaapi.constant.BaseConstant;
 import com.lord.local.gptjavaapi.dao.UserDao;
 import com.lord.local.gptjavaapi.dao.entity.User;
@@ -26,11 +28,49 @@ import java.util.regex.Pattern;
 public class UserServer {
 
 
+    @Autowired
+    private MyRedisService _myRedisService;
 
     @Autowired
     private UserDao _userDao;
 
-
+    private String user_cache_format="user:uid_%d";
+    private Long EXPIRATION_MILLISECONDS_USER=6*10*1000L;
+    public  User selectUserCache(Long uid){
+        if(uid<=0){
+            return null;
+        }
+        String userJson= _myRedisService.readValueForStr(String.format(user_cache_format,uid));
+        User user = JSONObject.parseObject(userJson, User.class);
+        if(user==null){
+            User userDto = selectUser(uid);
+            if(userDto!=null){
+                boolean result = _myRedisService.putString(String.format(user_cache_format,uid), JSONObject.toJSONString(userDto), EXPIRATION_MILLISECONDS_USER);
+                if(!result){
+                    log.error("set user {} on cache error ",uid);
+                }
+            }
+            return userDto;
+        }
+        return user;
+    }
+    private   User selectUser(Long uid){
+        User selectModel = new User();
+        List<User> users = null;
+        try {
+            UserExample example = new UserExample();
+            example.setLimit(1);
+            example.setOrderByClause("create_time desc");
+            UserExample.Criteria or = example.or();
+            or.andUidEqualTo(uid);
+            or.andIsDeletedEqualTo(BaseConstant.IS_UN_DELETED);
+            users = _userDao.selectByExample(example);
+            return  users.stream().findFirst().orElse(null);
+        } catch (Exception e) {
+            log.error("error,msg:{}", e.getMessage(), e);
+        }
+        return null;
+    }
     public List<User> selectUsers() {
         User selectModel = new User();
         List<User> users = null;

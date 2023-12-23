@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -37,6 +38,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String header = request.getHeader("Authorization");
+        if(StringUtils.isEmpty(header)){
+            header=request.getParameter("Authorization");
+        }
         //过滤swagger
         String path = request.getRequestURI();
         if (isMatch(path,"/swagger-ui.html/**")
@@ -49,7 +53,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
         //过滤 注册 登录
         if (path.equalsIgnoreCase("/user/create")
+                ||path.equalsIgnoreCase("/hello")
                 || path.equalsIgnoreCase("/user/getToken")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        //过滤三方使用
+        if (path.equalsIgnoreCase("/chat/weChatCompletionsV2")
+                ) {
             filterChain.doFilter(request, response);
             return;
         }

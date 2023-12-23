@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.Valid;
 import java.io.Serializable;
+import java.util.Map;
 
 @Data
 @Valid
@@ -17,4 +18,6 @@ public class UserChatContentRequest implements Serializable {
     private String content;
     @ApiModelProperty(name = "会话Id", example = "2233", required = true)
     private Long chatId;
+
+    private String weChatKey;
 }

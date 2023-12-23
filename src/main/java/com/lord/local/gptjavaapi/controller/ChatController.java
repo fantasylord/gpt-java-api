@@ -3,6 +3,7 @@ package com.lord.local.gptjavaapi.controller;
 
 import com.lord.local.gptjavaapi.dao.entity.ChatContent;
 import com.lord.local.gptjavaapi.dao.entity.User;
+import com.lord.local.gptjavaapi.exception.ResponseStatusEnum;
 import com.lord.local.gptjavaapi.model.resultful.*;
 import com.lord.local.gptjavaapi.remoter.client.OpenAIUserClient;
 import com.lord.local.gptjavaapi.remoter.client.OpenChatClient;
@@ -10,6 +11,7 @@ import com.lord.local.gptjavaapi.remoter.model.OpenAIV1ModelDataResponse;
 import com.lord.local.gptjavaapi.remoter.model.OpenAIV1ModelResponse;
 import com.lord.local.gptjavaapi.service.ChatContentService;
 import com.lord.local.gptjavaapi.service.JwtTokenProvider;
+import com.sun.org.apache.xml.internal.utils.StringComparable;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -51,6 +54,10 @@ public class ChatController {
     @Autowired
     private HttpServletResponse httpServletResponse;
 
+    @Value("${we.chat.key}")
+    private String weChatKey;
+    @Value("${we.chat.uid}")
+    private String weChatUid;
     @GetMapping("/model/{model_id}")
     public String getModel(@PathVariable("model_id") String modelId) {
 
@@ -83,12 +90,43 @@ public class ChatController {
         ChatResponseModel completions = _chatContentService.completions(request.getChatId(), tokenClaims.getUid(), request.getContent());
         return ChatBaseResponse.successResponse(completions);
     }
+    @ApiOperation(value = "微信对话请求")
+    @PostMapping("/weChatCompletionsV2")
+    public WeChatResponse weChatCompletionsV2(@RequestBody @Valid UserChatContentRequest request) {
+        WeChatResponse weChatResponse=new WeChatResponse();
+        Map err_map= new HashMap<String,String>();
+        weChatResponse.setErr_code(1);
+            if(StringUtils.isEmpty(request.getWeChatKey())){
+                err_map.put("content","未获取微信配置key");
+                weChatResponse.setData_list(err_map);
+                weChatResponse.setErr_code(-1);
+                return weChatResponse;
+            }
+            if(request.getWeChatKey().compareToIgnoreCase(weChatKey)!=0){
+                err_map.put("content","微信配置key错误");
+                weChatResponse.setData_list(err_map);
+                weChatResponse.setErr_code(-1);
+                return weChatResponse;
+            }
+
+        ChatResponseModel completions = _chatContentService.completions(request.getChatId(), Long.valueOf(weChatUid), request.getContent());
+        String data="";
+        try {
+             data=completions.getChoices().get(0).getMessage().getContent();
+        } catch (NullPointerException e) {
+            data="聊天丢失了";
+        }
+        Map<String,String> data_list=new HashMap<>();
+        data_list.put("content",data);
+        weChatResponse.setData_list(data_list);
+        return  weChatResponse;
+    }
 
     @ApiOperation(value = "聊天窗口创建")
     @PostMapping("/session/create")
-    public ChatBaseResponse<UserSessionModel> createUserSession(@RequestParam(value = "title", defaultValue = "三体文明研究") @Length(min = 1, max = 255) String title) {
+    public ChatBaseResponse<UserSessionModel> createUserSession(@RequestBody @Valid CreateChatGptSessionModelRequest request) {
         User tokenClaims = _jwtTokenProvider.getTokenClaims(httpServletRequest);
-        UserSessionModel userSessionModel = _chatContentService.addSession(tokenClaims.getUid(), title);
+        UserSessionModel userSessionModel = _chatContentService.addSession(tokenClaims.getUid(), request);
         return ChatBaseResponse.successResponse(userSessionModel);
     }
     @ApiOperation(value = "聊天列表获取")

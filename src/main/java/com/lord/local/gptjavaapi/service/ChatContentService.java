@@ -17,6 +17,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -69,11 +70,17 @@ public class ChatContentService {
         return system;
     }
 
-    public ChatMessageModel setSystemActor(String title) {
+    public ChatMessageModel setSystemActor(String title,String roleContent) {
         ChatMessageModel system = ChatMessageModel.builder()
                 .role("system")
-                .content(SYSTEM_DESC + ",沟通的主题是".concat(title))
                 .build();
+        if(StringUtils.isEmpty(roleContent)){
+            system.setContent(SYSTEM_DESC+ ",沟通的主题是".concat(title));
+        }
+        else {
+
+            system.setContent(roleContent+ ",沟通的主题是".concat(title));
+        }
         return system;
     }
 
@@ -188,7 +195,7 @@ public class ChatContentService {
             log.error("检查是否已存在,uid:{},title:{}", uid, titile);
             throw new ServiceException(ResponseStatusEnum.SYS_DB_ERROR);
         }
-        ChatMessageModel systemActor = _chatContentService.setSystemActor(titile);
+        ChatMessageModel systemActor = _chatContentService.setSystemActor(titile,null);
         ChatSession chatSession = _chatSessionDao.selectByPrimaryKey(record.getChatId());
         UserSessionModel userSessionModel = new UserSessionModel();
         BeanUtils.copyProperties(chatSession, userSessionModel);
@@ -196,6 +203,40 @@ public class ChatContentService {
         UserChatContentModel contentModel = new UserChatContentModel();
         //获取system内容
         contentModel.setContent(systemActor.getContent());
+        contentModel.setRole(systemActor.getRole());
+        userChatContentModels.add(contentModel);
+        userSessionModel.setUserChatContentModels(userChatContentModels);
+        return userSessionModel;
+    }
+
+    /**
+     * 创建会话
+     *
+     * @param uid
+     * @param request
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public UserSessionModel addSession(Long uid, CreateChatGptSessionModelRequest request) {
+        ChatSession record = new ChatSession();
+        record.setChatTitle(request.getTitle());
+        record.setUserId(uid);
+        try {
+            _chatSessionDao.insertSelective(record);
+        } catch (DuplicateKeyException e) {
+            log.error("检查是否已存在,uid:{},title:{}", uid, request.getTitle());
+            throw new ServiceException(ResponseStatusEnum.SYS_DB_ERROR);
+        }
+        ChatMessageModel systemActor = _chatContentService.setSystemActor(request.getTitle(),request.getRole_desc());
+        ChatSession chatSession = _chatSessionDao.selectByPrimaryKey(record.getChatId());
+        UserSessionModel userSessionModel = new UserSessionModel();
+        BeanUtils.copyProperties(chatSession, userSessionModel);
+        ArrayList<UserChatContentModel> userChatContentModels = new ArrayList<>();
+        UserChatContentModel contentModel = new UserChatContentModel();
+        //获取Role
+             contentModel.setContent(systemActor.getContent());
+        // system内容
+        //配置role
         contentModel.setRole(systemActor.getRole());
         userChatContentModels.add(contentModel);
         userSessionModel.setUserChatContentModels(userChatContentModels);
@@ -255,7 +296,7 @@ public class ChatContentService {
     public ChatResponseModel completions(Long chatId, Long uid, String content) {
         List<UserChatContentModel> userChatContent = _chatContentService.getUserChatContent(chatId, uid);
         UserSessionModel userChatSession = _chatContentService.getUserChatSession(uid, chatId);
-        ChatMessageModel systemActor = setSystemActor(userChatSession.getChatTitle());
+        ChatMessageModel systemActor = setSystemActor(userChatSession.getChatTitle(),content);
 
         ChatRequestModel chatRequestModel = _chatContentService.createChatRobot();
         List<ChatMessageModel> messages = chatRequestModel.getMessages();
@@ -281,7 +322,12 @@ public class ChatContentService {
         contentMessage.setContent(content);
         messages.add(contentMessage);
         //请求对话
-        ChatResponseModel completions = _openChatClient.completions(chatRequestModel);
+        ChatResponseModel completions = null;
+        try {
+            completions = _openChatClient.completions(chatRequestModel);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         addUserContent(chatId, uid, contentMessage);
         addAssiantContent(chatId, uid, completions);
 

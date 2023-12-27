@@ -315,6 +315,76 @@ public class ChatSessionExample {
             return (Criteria) this;
         }
 
+        public Criteria andChatRoleDescIsNull() {
+            addCriterion("chat_role_desc is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andChatRoleDescIsNotNull() {
+            addCriterion("chat_role_desc is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andChatRoleDescEqualTo(String value) {
+            addCriterion("chat_role_desc =", value, "chatRoleDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andChatRoleDescNotEqualTo(String value) {
+            addCriterion("chat_role_desc <>", value, "chatRoleDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andChatRoleDescGreaterThan(String value) {
+            addCriterion("chat_role_desc >", value, "chatRoleDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andChatRoleDescGreaterThanOrEqualTo(String value) {
+            addCriterion("chat_role_desc >=", value, "chatRoleDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andChatRoleDescLessThan(String value) {
+            addCriterion("chat_role_desc <", value, "chatRoleDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andChatRoleDescLessThanOrEqualTo(String value) {
+            addCriterion("chat_role_desc <=", value, "chatRoleDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andChatRoleDescLike(String value) {
+            addCriterion("chat_role_desc like", value, "chatRoleDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andChatRoleDescNotLike(String value) {
+            addCriterion("chat_role_desc not like", value, "chatRoleDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andChatRoleDescIn(List<String> values) {
+            addCriterion("chat_role_desc in", values, "chatRoleDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andChatRoleDescNotIn(List<String> values) {
+            addCriterion("chat_role_desc not in", values, "chatRoleDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andChatRoleDescBetween(String value1, String value2) {
+            addCriterion("chat_role_desc between", value1, value2, "chatRoleDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andChatRoleDescNotBetween(String value1, String value2) {
+            addCriterion("chat_role_desc not between", value1, value2, "chatRoleDesc");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;

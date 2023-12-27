@@ -5,6 +5,7 @@
     <id column="chat_id" jdbcType="BIGINT" property="chatId" />
     <result column="chat_title" jdbcType="VARCHAR" property="chatTitle" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="chat_role_desc" jdbcType="VARCHAR" property="chatRoleDesc" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
@@ -68,7 +69,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    chat_id, chat_title, user_id, create_time, update_time, is_deleted
+    chat_id, chat_title, user_id, chat_role_desc, create_time, update_time, is_deleted
   </sql>
   <select id="selectByExample" parameterType="com.lord.local.gptjavaapi.dao.entity.ChatSessionExample" resultMap="BaseResultMap">
     select
@@ -109,10 +110,12 @@
     </if>
   </delete>
   <insert id="insert" keyColumn="chat_id" keyProperty="chatId" parameterType="com.lord.local.gptjavaapi.dao.entity.ChatSession" useGeneratedKeys="true">
-    insert into chat_session (chat_title, user_id, create_time, 
-      update_time, is_deleted)
-    values (#{chatTitle,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT})
+    insert into chat_session (chat_title, user_id, chat_role_desc, 
+      create_time, update_time, is_deleted
+      )
+    values (#{chatTitle,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}, #{chatRoleDesc,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="chat_id" keyProperty="chatId" parameterType="com.lord.local.gptjavaapi.dao.entity.ChatSession" useGeneratedKeys="true">
     insert into chat_session
@@ -122,6 +125,9 @@
       </if>
       <if test="userId != null">
         user_id,
+      </if>
+      <if test="chatRoleDesc != null">
+        chat_role_desc,
       </if>
       <if test="createTime != null">
         create_time,
@@ -139,6 +145,9 @@
       </if>
       <if test="userId != null">
         #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="chatRoleDesc != null">
+        #{chatRoleDesc,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
@@ -169,6 +178,9 @@
       <if test="record.userId != null">
         user_id = #{record.userId,jdbcType=BIGINT},
       </if>
+      <if test="record.chatRoleDesc != null">
+        chat_role_desc = #{record.chatRoleDesc,jdbcType=VARCHAR},
+      </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
       </if>
@@ -188,6 +200,7 @@
     set chat_id = #{record.chatId,jdbcType=BIGINT},
       chat_title = #{record.chatTitle,jdbcType=VARCHAR},
       user_id = #{record.userId,jdbcType=BIGINT},
+      chat_role_desc = #{record.chatRoleDesc,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
       is_deleted = #{record.isDeleted,jdbcType=TINYINT}
@@ -203,6 +216,9 @@
       </if>
       <if test="userId != null">
         user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="chatRoleDesc != null">
+        chat_role_desc = #{chatRoleDesc,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -220,6 +236,7 @@
     update chat_session
     set chat_title = #{chatTitle,jdbcType=VARCHAR},
       user_id = #{userId,jdbcType=BIGINT},
+      chat_role_desc = #{chatRoleDesc,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
       is_deleted = #{isDeleted,jdbcType=TINYINT}

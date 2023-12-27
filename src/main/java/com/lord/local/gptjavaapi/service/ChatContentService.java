@@ -186,16 +186,17 @@ public class ChatContentService {
      */
     @Transactional(rollbackFor = Exception.class)
     public UserSessionModel addSession(Long uid, String titile) {
+        ChatMessageModel systemActor = _chatContentService.setSystemActor(titile,null);
         ChatSession record = new ChatSession();
         record.setChatTitle(titile);
         record.setUserId(uid);
+        record.setChatRoleDesc(systemActor.getContent());
         try {
             _chatSessionDao.insertSelective(record);
         } catch (DuplicateKeyException e) {
             log.error("检查是否已存在,uid:{},title:{}", uid, titile);
             throw new ServiceException(ResponseStatusEnum.SYS_DB_ERROR);
         }
-        ChatMessageModel systemActor = _chatContentService.setSystemActor(titile,null);
         ChatSession chatSession = _chatSessionDao.selectByPrimaryKey(record.getChatId());
         UserSessionModel userSessionModel = new UserSessionModel();
         BeanUtils.copyProperties(chatSession, userSessionModel);
@@ -218,16 +219,18 @@ public class ChatContentService {
      */
     @Transactional(rollbackFor = Exception.class)
     public UserSessionModel addSession(Long uid, CreateChatGptSessionModelRequest request) {
+        ChatMessageModel systemActor = _chatContentService.setSystemActor(request.getTitle(),request.getRole_desc());
         ChatSession record = new ChatSession();
         record.setChatTitle(request.getTitle());
         record.setUserId(uid);
+        record.setChatRoleDesc(request.getRole_desc());
         try {
             _chatSessionDao.insertSelective(record);
         } catch (DuplicateKeyException e) {
             log.error("检查是否已存在,uid:{},title:{}", uid, request.getTitle());
             throw new ServiceException(ResponseStatusEnum.SYS_DB_ERROR);
         }
-        ChatMessageModel systemActor = _chatContentService.setSystemActor(request.getTitle(),request.getRole_desc());
+
         ChatSession chatSession = _chatSessionDao.selectByPrimaryKey(record.getChatId());
         UserSessionModel userSessionModel = new UserSessionModel();
         BeanUtils.copyProperties(chatSession, userSessionModel);
@@ -296,7 +299,7 @@ public class ChatContentService {
     public ChatResponseModel completions(Long chatId, Long uid, String content) {
         List<UserChatContentModel> userChatContent = _chatContentService.getUserChatContent(chatId, uid);
         UserSessionModel userChatSession = _chatContentService.getUserChatSession(uid, chatId);
-        ChatMessageModel systemActor = setSystemActor(userChatSession.getChatTitle(),content);
+        ChatMessageModel systemActor = setSystemActor(userChatSession.getChatTitle(), userChatSession.getChatRoleDesc());
 
         ChatRequestModel chatRequestModel = _chatContentService.createChatRobot();
         List<ChatMessageModel> messages = chatRequestModel.getMessages();

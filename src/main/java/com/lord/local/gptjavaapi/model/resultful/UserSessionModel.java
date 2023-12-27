@@ -19,7 +19,11 @@ public class UserSessionModel implements Serializable {
      */
     @ApiModelProperty("会话标题")
     private String chatTitle;
-
+    /**
+     * 会话角色描述
+     */
+    @ApiModelProperty("会话角色描述")
+    private String chatRoleDesc;
     @ApiModelProperty("用户Id")
     private Long userId;
 

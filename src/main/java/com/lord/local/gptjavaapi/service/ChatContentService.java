@@ -70,16 +70,15 @@ public class ChatContentService {
         return system;
     }
 
-    public ChatMessageModel setSystemActor(String title,String roleContent) {
+    public ChatMessageModel setSystemActor(String title, String roleContent) {
         ChatMessageModel system = ChatMessageModel.builder()
                 .role("system")
                 .build();
-        if(StringUtils.isEmpty(roleContent)){
-            system.setContent(SYSTEM_DESC+ ",沟通的主题是".concat(title));
-        }
-        else {
+        if (StringUtils.isEmpty(roleContent)) {
+            system.setContent(SYSTEM_DESC + ",沟通的主题是".concat(title));
+        } else {
 
-            system.setContent(roleContent+ ",沟通的主题是".concat(title));
+            system.setContent(roleContent + ",沟通的主题是".concat(title));
         }
         return system;
     }
@@ -186,7 +185,7 @@ public class ChatContentService {
      */
     @Transactional(rollbackFor = Exception.class)
     public UserSessionModel addSession(Long uid, String titile) {
-        ChatMessageModel systemActor = _chatContentService.setSystemActor(titile,null);
+        ChatMessageModel systemActor = _chatContentService.setSystemActor(titile, null);
         ChatSession record = new ChatSession();
         record.setChatTitle(titile);
         record.setUserId(uid);
@@ -219,7 +218,7 @@ public class ChatContentService {
      */
     @Transactional(rollbackFor = Exception.class)
     public UserSessionModel addSession(Long uid, CreateChatGptSessionModelRequest request) {
-        ChatMessageModel systemActor = _chatContentService.setSystemActor(request.getTitle(),request.getRole_desc());
+        ChatMessageModel systemActor = _chatContentService.setSystemActor(request.getTitle(), request.getRole_desc());
         ChatSession record = new ChatSession();
         record.setChatTitle(request.getTitle());
         record.setUserId(uid);
@@ -237,8 +236,7 @@ public class ChatContentService {
         ArrayList<UserChatContentModel> userChatContentModels = new ArrayList<>();
         UserChatContentModel contentModel = new UserChatContentModel();
         //获取Role
-             contentModel.setContent(systemActor.getContent());
-        // system内容
+        contentModel.setContent(systemActor.getContent());
         //配置role
         contentModel.setRole(systemActor.getRole());
         userChatContentModels.add(contentModel);
@@ -331,11 +329,16 @@ public class ChatContentService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        addUserContent(chatId, uid, contentMessage);
-        addAssiantContent(chatId, uid, completions);
+        _chatContentService.addUserContent(chatId, uid, contentMessage);
+        _chatContentService.addAssiantContent(chatId, uid, completions);
 
         //记录对话内容到DB
         return completions;
+    }
+
+
+    public ChatResponseModel completionsByWeChat(String content) {
+        return _chatContentService.completions(15L, 1L, content);
     }
 
     /**

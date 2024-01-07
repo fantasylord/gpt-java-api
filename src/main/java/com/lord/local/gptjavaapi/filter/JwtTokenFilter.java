@@ -64,7 +64,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
+        //过滤ferry
+        if (path.equalsIgnoreCase("/ferry/callback")
+        ) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             if (jwtTokenProvider.validateToken(token)) {

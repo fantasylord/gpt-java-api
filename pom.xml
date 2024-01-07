@@ -161,7 +161,17 @@
             <artifactId>fastjson2-extension-spring5</artifactId>
             <version>2.0.26</version>
         </dependency>
-
+<!--        swagger远程fegin辅助生成器配合plugs使用 -->
+        <dependency>
+            <groupId>io.swagger.codegen.v3</groupId>
+            <artifactId>swagger-codegen-maven-plugin</artifactId>
+            <version>3.0.51</version>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>io.swagger</groupId>-->
+<!--            <artifactId>swagger-codegen-maven-plugin</artifactId>-->
+<!--            <version>2.4.37</version>-->
+<!--        </dependency>-->
         <!--         oauth支持-->
         <!--        <dependency>-->
         <!--            <groupId>org.springframework.security.oauth</groupId>-->
@@ -189,6 +199,37 @@
 
     <build>
         <plugins>
+<!--            swagger逆向API生成插件，不用请注释-->
+<!--            <plugin>-->
+<!--                <groupId>io.swagger.codegen.v3</groupId>-->
+<!--                <artifactId>swagger-codegen-maven-plugin</artifactId>-->
+<!--                <version>3.0.51</version>-->
+<!--                    <executions>-->
+<!--                        <execution>-->
+<!--                            <goals>-->
+<!--                                <goal>generate</goal>-->
+<!--                            </goals>-->
+<!--                            <configuration>-->
+<!--                                <inputSpec>http://192.168.199.129:9999/openapi.json</inputSpec>-->
+<!--&lt;!&ndash;                                <inputSpec>http://petstore.swagger.io/v2/swagger.json</inputSpec>&ndash;&gt;-->
+<!--                                <language>spring</language>-->
+<!--                                <library>spring-cloud</library>-->
+<!--                                <output>${project.build.directory}/generated-sources/swagger</output>-->
+<!--                                <generateModelTests>false</generateModelTests>-->
+<!--                                <configOptions>-->
+<!--                                    <interfaceOnly>true</interfaceOnly>-->
+<!--                                    <sourceFolder>src/gen/java/main</sourceFolder>-->
+<!--&lt;!&ndash;                                    移除默认参数&ndash;&gt;-->
+<!--                                    <useOptional>true</useOptional>-->
+<!--                                    <modelPropertyNaming>original</modelPropertyNaming>-->
+<!--                                    <setters>false</setters>-->
+<!--                                    <default>false</default>-->
+<!--                                    <removeDefaultResponse>false</removeDefaultResponse>-->
+<!--                                </configOptions>-->
+<!--                            </configuration>-->
+<!--                        </execution>-->
+<!--                    </executions>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

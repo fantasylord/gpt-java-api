@@ -18,4 +18,8 @@ public class CreateChatGptSessionModelRequest implements Serializable {
     @Length(max = 1024)
     private String role_desc;
 
+    @ApiModelProperty(value = "tag", example = "微信群XXXX")
+    @Length(max = 255)
+    private String tag;
+
 }
